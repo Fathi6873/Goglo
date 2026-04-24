@@ -1,0 +1,597 @@
+```react
+import React, { useState, useEffect } from 'react';
+import { 
+  Menu, X, Calendar, BookOpen, User, Users, FileText, 
+  MapPin, Phone, Mail, ChevronRight, GraduationCap, 
+  Bell, Search, Download, Clock, Award, CheckCircle,
+  ArrowRight, ShieldCheck, Globe, Star
+} from 'lucide-react';
+
+/**
+ * GOGLO SCHOOL WEBSITE - COMPLETE IMPLEMENTATION
+ * Features:
+ * 1. Multi-page navigation (Home, Academics, Admissions, Exam Hub, Portals)
+ * 2. Exam Archive (Previous years resources for Grades 6-12)
+ * 3. Mobile-responsive design
+ * 4. Admission Inquiry Form (Grade 6-12 selection)
+ * 5. Interactive Portals
+ */
+
+// --- SHARED UI COMPONENTS ---
+
+const Button = ({ children, variant = 'primary', className = '', onClick }) => {
+  const variants = {
+    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md',
+    secondary: 'bg-white text-indigo-900 border border-gray-200 hover:bg-gray-50',
+    outline: 'border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50',
+    ghost: 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+  };
+
+  return (
+    <button 
+      onClick={onClick}
+      className={`px-6 py-2.5 rounded-xl font-bold transition-all active:scale-95 disabled:opacity-50 ${variants[variant]} ${className}`}
+    >
+      {children}
+    </button>
+  );
+};
+
+const SectionHeading = ({ title, subtitle, light = false }) => (
+  <div className="text-center mb-16 px-4">
+    <h2 className={`text-3xl md:text-5xl font-extrabold mb-4 ${light ? 'text-white' : 'text-slate-900'}`}>
+      {title}
+    </h2>
+    <div className={`w-24 h-1.5 mx-auto rounded-full mb-6 ${light ? 'bg-white/30' : 'bg-indigo-600'}`}></div>
+    <p className={`max-w-2xl mx-auto text-lg ${light ? 'text-indigo-100' : 'text-slate-600'}`}>
+      {subtitle}
+    </p>
+  </div>
+);
+
+// --- PAGE SECTIONS ---
+
+const Navbar = ({ activeTab, setActiveTab }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const menuItems = [
+    { id: 'home', label: 'Home' },
+    { id: 'academics', label: 'Academics' },
+    { id: 'exams', label: 'Exam Hub' },
+    { id: 'admissions', label: 'Admissions' },
+    { id: 'portal', label: 'Portals' }
+  ];
+
+  return (
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+      scrolled ? 'bg-white shadow-xl py-3' : 'bg-white/95 backdrop-blur-sm py-5'
+    }`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center">
+          <div 
+            className="flex items-center space-x-2 cursor-pointer group"
+            onClick={() => setActiveTab('home')}
+          >
+            <div className="bg-indigo-600 p-2 rounded-xl group-hover:rotate-12 transition-transform">
+              <GraduationCap className="text-white w-8 h-8" />
+            </div>
+            <span className="text-2xl font-black text-slate-900 tracking-tighter">GOGLO</span>
+          </div>
+          
+          <div className="hidden lg:flex items-center space-x-1">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${
+                  activeTab === item.id 
+                    ? 'text-indigo-600 bg-indigo-50' 
+                    : 'text-slate-600 hover:text-indigo-600 hover:bg-gray-50'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+            <div className="pl-4">
+              <Button onClick={() => setActiveTab('admissions')}>Apply Now</Button>
+            </div>
+          </div>
+
+          <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden p-2 text-slate-900">
+            {isOpen ? <X size={28} /> : <Menu size={28} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="lg:hidden bg-white border-t mt-3 absolute w-full shadow-2xl animate-fade-in">
+          <div className="px-4 py-6 space-y-2">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => { setActiveTab(item.id); setIsOpen(false); }}
+                className={`block w-full text-left px-4 py-4 rounded-xl text-lg font-bold ${
+                  activeTab === item.id ? 'bg-indigo-600 text-white' : 'text-slate-700 hover:bg-gray-100'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+            <div className="pt-4">
+              <button className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-xl shadow-lg">
+                APPLY FOR 2026
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+};
+
+const HomePage = ({ setActiveTab }) => (
+  <div className="animate-fade-in">
+    {/* Hero */}
+    <section className="relative min-h-[90vh] flex items-center pt-20 overflow-hidden bg-slate-900">
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="https://images.unsplash.com/photo-1541339907198-e08759dfc3f0?auto=format&fit=crop&q=80&w=2000" 
+          alt="Campus" 
+          className="w-full h-full object-cover opacity-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/60 to-transparent"></div>
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+        <div className="max-w-3xl">
+          <div className="inline-flex items-center space-x-2 bg-indigo-500/20 backdrop-blur-md border border-indigo-400/30 px-4 py-2 rounded-full text-indigo-300 text-sm font-bold mb-8 animate-bounce-slow">
+            <Star size={16} fill="currentColor" />
+            <span>Awarded #1 Global Curriculum 2025</span>
+          </div>
+          <h1 className="text-6xl md:text-8xl font-black leading-none mb-8 tracking-tighter">
+            Build Your <br />
+            <span className="text-indigo-500">Future</span> Here.
+          </h1>
+          <p className="text-xl text-slate-300 mb-10 leading-relaxed max-w-xl">
+            Join Goglo's innovative community where we blend advanced technology with 
+            traditional academic rigor to prepare students from Grade 6 to Grade 12 for a global stage.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-5">
+            <button 
+              onClick={() => setActiveTab('admissions')}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-5 rounded-2xl font-black text-lg shadow-2xl transition-all hover:-translate-y-1 flex items-center justify-center gap-2"
+            >
+              Start Enrollment <ArrowRight size={20} />
+            </button>
+            <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-10 py-5 rounded-2xl font-black text-lg transition-all">
+              Watch Campus Tour
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* Statistics */}
+    <section className="bg-indigo-600 py-12">
+      <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-white text-center">
+        <div>
+          <div className="text-4xl font-black mb-1">2,500+</div>
+          <div className="text-indigo-200 font-bold uppercase tracking-widest text-xs">Students</div>
+        </div>
+        <div>
+          <div className="text-4xl font-black mb-1">98%</div>
+          <div className="text-indigo-200 font-bold uppercase tracking-widest text-xs">University Pass</div>
+        </div>
+        <div>
+          <div className="text-4xl font-black mb-1">15:1</div>
+          <div className="text-indigo-200 font-bold uppercase tracking-widest text-xs">Student Ratio</div>
+        </div>
+        <div>
+          <div className="text-4xl font-black mb-1">45+</div>
+          <div className="text-indigo-200 font-bold uppercase tracking-widest text-xs">Specialties</div>
+        </div>
+      </div>
+    </section>
+
+    {/* Core Pillars */}
+    <section className="py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4">
+        <SectionHeading 
+          title="The Goglo Advantage" 
+          subtitle="We focus on more than just grades. We build characters, leaders, and innovators."
+        />
+        <div className="grid md:grid-cols-3 gap-12">
+          {[
+            { icon: ShieldCheck, title: 'Safe Environment', desc: 'State-of-the-art secure campus with 24/7 monitoring and wellness support.', color: 'text-blue-600', bg: 'bg-blue-50' },
+            { icon: Globe, title: 'Global Exposure', desc: 'Partnerships with Ivy League universities and international exchange programs.', color: 'text-indigo-600', bg: 'bg-indigo-50' },
+            { icon: Award, title: 'Excellence Guaranteed', desc: 'Rigorous curriculum designed by global industry experts and PhD educators.', color: 'text-amber-600', bg: 'bg-amber-50' }
+          ].map((item, i) => (
+            <div key={i} className="p-10 rounded-3xl border border-gray-100 hover:shadow-2xl transition-all duration-300 group">
+              <div className={`${item.bg} ${item.color} w-16 h-16 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform`}>
+                <item.icon size={32} />
+              </div>
+              <h3 className="text-2xl font-black text-slate-900 mb-4">{item.title}</h3>
+              <p className="text-slate-600 leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+);
+
+const ExamHubPage = () => {
+  const [filter, setFilter] = useState('All');
+  const years = ['All', '2025', '2024', '2023', '2022'];
+  
+  const exams = [
+    { id: 1, title: 'Pure Mathematics', year: '2025', grade: 'Grade 12', type: 'Final', size: '1.2MB' },
+    { id: 2, title: 'Advanced Chemistry', year: '2025', grade: 'Grade 11', type: 'Mid-term', size: '1.4MB' },
+    { id: 3, title: 'Physical Sciences', year: '2024', grade: 'Grade 10', type: 'Final', size: '2.1MB' },
+    { id: 4, title: 'Life Skills & Ethics', year: '2024', grade: 'Grade 9', type: 'Mock', size: '1.5MB' },
+    { id: 5, title: 'Social Studies', year: '2023', grade: 'Grade 8', type: 'Final', size: '950KB' },
+    { id: 6, title: 'Creative Arts', year: '2023', grade: 'Grade 7', type: 'Final', size: '1.1MB' },
+    { id: 7, title: 'Basic Mathematics', year: '2025', grade: 'Grade 6', type: 'Mid-term', size: '700KB' },
+  ];
+
+  const filteredExams = filter === 'All' ? exams : exams.filter(e => e.year === filter);
+
+  return (
+    <div className="pt-32 pb-24 bg-slate-50 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4">
+        <SectionHeading 
+          title="Examination Archive" 
+          subtitle="Study from the past to secure your future. Access previous years' papers and marking schemes for Grades 6 through 12."
+        />
+        
+        {/* Filter Bar */}
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
+          {years.map(y => (
+            <button
+              key={y}
+              onClick={() => setFilter(y)}
+              className={`px-6 py-2 rounded-full font-bold transition-all ${
+                filter === y 
+                ? 'bg-indigo-600 text-white shadow-lg' 
+                : 'bg-white text-slate-600 hover:bg-indigo-50 border border-gray-200'
+              }`}
+            >
+              {y === 'All' ? 'All Years' : y}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredExams.map(exam => (
+            <div key={exam.id} className="bg-white p-8 rounded-3xl border border-gray-100 hover:shadow-xl transition-all group">
+              <div className="flex justify-between items-start mb-6">
+                <div className="bg-indigo-50 text-indigo-600 p-3 rounded-2xl">
+                  <FileText size={24} />
+                </div>
+                <span className="bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-tighter px-3 py-1 rounded-full">
+                  {exam.year} Session
+                </span>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-1">{exam.title}</h3>
+              <p className="text-slate-500 text-sm mb-6 flex items-center gap-2">
+                <Users size={14} /> {exam.grade} • {exam.type}
+              </p>
+              <div className="pt-6 border-t border-gray-50 flex items-center justify-between">
+                <span className="text-xs text-slate-400 font-medium">{exam.size} PDF</span>
+                <button className="flex items-center gap-2 text-indigo-600 font-bold group-hover:underline">
+                  Download <Download size={18} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AdmissionPage = () => {
+  const [submitted, setSubmitted] = useState(false);
+
+  return (
+    <div className="pt-32 pb-24 bg-white min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-20 items-center">
+        <div>
+          <h1 className="text-5xl font-black text-slate-900 mb-6">Join the <span className="text-indigo-600">Goglo Family</span></h1>
+          <p className="text-lg text-slate-600 mb-10 leading-relaxed">
+            We are looking for passionate, curious, and driven students to join our 2026 cohort. We accept students from <strong>Grade 6 to Grade 12</strong>.
+          </p>
+          
+          <div className="space-y-8">
+            {[
+              { title: 'Inquiry', desc: 'Fill out the form to express interest.', step: '01' },
+              { title: 'Campus Visit', desc: 'Schedule a personalized tour of our labs.', step: '02' },
+              { title: 'Assessment', desc: 'General aptitude and interview round.', step: '03' }
+            ].map(item => (
+              <div key={item.step} className="flex gap-6">
+                <div className="text-3xl font-black text-indigo-100">{item.step}</div>
+                <div>
+                  <h4 className="text-xl font-bold text-slate-900 mb-1">{item.title}</h4>
+                  <p className="text-slate-500">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-slate-50 p-10 rounded-[2.5rem] border border-gray-100 shadow-2xl relative">
+          {submitted ? (
+            <div className="text-center py-20 animate-fade-in">
+              <div className="bg-emerald-100 text-emerald-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle size={40} />
+              </div>
+              <h2 className="text-3xl font-black text-slate-900 mb-4">Application Sent!</h2>
+              <p className="text-slate-600">Our team will contact you within 48 hours for the next steps.</p>
+              <Button className="mt-8" onClick={() => setSubmitted(false)}>Submit Another</Button>
+            </div>
+          ) : (
+            <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 ml-1">First Name</label>
+                  <input required className="w-full px-5 py-4 rounded-2xl bg-white border-0 shadow-sm focus:ring-2 focus:ring-indigo-600 outline-none transition" placeholder="John" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 ml-1">Last Name</label>
+                  <input required className="w-full px-5 py-4 rounded-2xl bg-white border-0 shadow-sm focus:ring-2 focus:ring-indigo-600 outline-none transition" placeholder="Doe" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700 ml-1">Current Grade Level</label>
+                <select className="w-full px-5 py-4 rounded-2xl bg-white border-0 shadow-sm focus:ring-2 focus:ring-indigo-600 outline-none transition">
+                  <option>Grade 6</option>
+                  <option>Grade 7</option>
+                  <option>Grade 8</option>
+                  <option>Grade 9</option>
+                  <option>Grade 10</option>
+                  <option>Grade 11</option>
+                  <option>Grade 12</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700 ml-1">Email Address</label>
+                <input required type="email" className="w-full px-5 py-4 rounded-2xl bg-white border-0 shadow-sm focus:ring-2 focus:ring-indigo-600 outline-none transition" placeholder="parent@email.com" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700 ml-1">Additional Notes</label>
+                <textarea className="w-full px-5 py-4 rounded-2xl bg-white border-0 shadow-sm focus:ring-2 focus:ring-indigo-600 outline-none transition h-32" placeholder="Tell us about special interests or questions..."></textarea>
+              </div>
+              <button className="w-full bg-slate-900 hover:bg-slate-800 text-white py-5 rounded-2xl font-black text-xl shadow-xl transition-all">
+                Send Application
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PortalPage = () => {
+  const portals = [
+    { title: 'Student Portal', icon: User, color: 'bg-blue-600', features: ['Grades', 'Schedules', 'Assignments'] },
+    { title: 'Parent Portal', icon: Users, color: 'bg-emerald-600', features: ['Attendance', 'Fee Payments', 'Progress Reports'] },
+    { title: 'Staff Portal', icon: ShieldCheck, color: 'bg-amber-600', features: ['Curriculum Management', 'Payroll', 'Communication'] },
+  ];
+
+  return (
+    <div className="pt-32 pb-24 bg-slate-900 min-h-screen text-white">
+      <div className="max-w-7xl mx-auto px-4">
+        <SectionHeading 
+          light 
+          title="Digital Campus" 
+          subtitle="Access centralized tools for learning and administration."
+        />
+        <div className="grid md:grid-cols-3 gap-8">
+          {portals.map((p, i) => (
+            <div key={i} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-10 hover:bg-white/10 transition-all cursor-pointer group">
+              <div className={`${p.color} w-20 h-20 rounded-3xl flex items-center justify-center mb-10 shadow-2xl group-hover:rotate-6 transition-transform`}>
+                <p.icon size={40} />
+              </div>
+              <h3 className="text-3xl font-black mb-6">{p.title}</h3>
+              <ul className="space-y-4 mb-10">
+                {p.features.map(f => (
+                  <li key={f} className="flex items-center gap-3 text-slate-400">
+                    <CheckCircle size={18} className="text-indigo-400" /> {f}
+                  </li>
+                ))}
+              </ul>
+              <button className="w-full border-2 border-white/20 hover:border-white py-4 rounded-2xl font-bold transition-all">
+                Login to Portal
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Footer = () => (
+  <footer className="bg-slate-950 text-slate-400 py-24">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-16">
+        <div className="col-span-1 md:col-span-1">
+          <div className="flex items-center space-x-3 text-white mb-8">
+            <div className="bg-indigo-600 p-1.5 rounded-lg">
+              <GraduationCap className="w-6 h-6" />
+            </div>
+            <span className="text-2xl font-black tracking-tighter">GOGLO</span>
+          </div>
+          <p className="text-sm leading-relaxed mb-8 max-w-xs">
+            Pioneering a new standard in education. Established 1998, Reimagined for 2026.
+          </p>
+          <div className="flex space-x-3">
+            {[Globe, Phone, Mail].map((Icon, i) => (
+              <div key={i} className="w-12 h-12 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-center hover:bg-indigo-600 cursor-pointer transition-all text-white hover:border-indigo-400">
+                <Icon size={20} />
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div>
+          <h4 className="text-white font-black uppercase tracking-widest text-xs mb-8">Education</h4>
+          <ul className="space-y-4 text-sm font-bold">
+            <li><a href="#" className="hover:text-indigo-400 transition">Academic Calendar</a></li>
+            <li><a href="#" className="hover:text-indigo-400 transition">Exam Hub</a></li>
+            <li><a href="#" className="hover:text-indigo-400 transition">Library Resources</a></li>
+            <li><a href="#" className="hover:text-indigo-400 transition">STEM Labs</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="text-white font-black uppercase tracking-widest text-xs mb-8">Community</h4>
+          <ul className="space-y-4 text-sm font-bold">
+            <li><a href="#" className="hover:text-indigo-400 transition">Alumni Network</a></li>
+            <li><a href="#" className="hover:text-indigo-400 transition">Parent Council</a></li>
+            <li><a href="#" className="hover:text-indigo-400 transition">Sports Clubs</a></li>
+            <li><a href="#" className="hover:text-indigo-400 transition">Campus Security</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="text-white font-black uppercase tracking-widest text-xs mb-8">Contact</h4>
+          <div className="space-y-6">
+            <div className="flex items-start space-x-4 text-sm">
+              <MapPin size={20} className="text-indigo-500 shrink-0" />
+              <p className="font-medium">Education Square, Silicon Valley<br />CA 94000, USA</p>
+            </div>
+            <div className="flex items-center space-x-4 text-sm">
+              <Phone size={20} className="text-indigo-500 shrink-0" />
+              <p className="font-medium">+1 (800) GOGLO-EDU</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="border-t border-slate-900 mt-20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold uppercase tracking-widest text-slate-600">
+        <p>© 2026 GOGLO ACADEMY. ALL RIGHTS RESERVED.</p>
+        <div className="flex gap-8">
+          <a href="#" className="hover:text-white">Privacy</a>
+          <a href="#" className="hover:text-white">Terms</a>
+          <a href="#" className="hover:text-white">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+);
+
+// --- MAIN APPLICATION ENTRY ---
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('home');
+
+  // Logic for scroll to top on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab]);
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'home': return <HomePage setActiveTab={setActiveTab} />;
+      case 'exams': return <ExamHubPage />;
+      case 'admissions': return <AdmissionPage />;
+      case 'portal': return <PortalPage />;
+      case 'academics':
+        return (
+          <div className="pt-32 pb-24 text-center">
+            <SectionHeading title="Academics" subtitle="Our curriculum for Grades 6-12 is currently being optimized for 2026. Check back soon for detailed course maps." />
+            <div className="flex justify-center py-20">
+              <div className="w-20 h-20 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <Button onClick={() => setActiveTab('home')}>Back Home</Button>
+          </div>
+        );
+      default: return <HomePage setActiveTab={setActiveTab} />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
+      <GlobalStyles />
+      {/* Top Banner */}
+      <div className="bg-indigo-700 text-white text-[10px] md:text-xs font-black uppercase tracking-[0.2em] py-2 text-center flex items-center justify-center gap-3">
+        <Bell size={14} className="animate-pulse" />
+        Fall 2026 Scholarship Window is now open for Grades 6-12. Deadline: July 15.
+      </div>
+
+      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+      
+      <main>
+        {renderContent()}
+      </main>
+
+      <Footer />
+      
+      {/* Scroll Progress Bar placeholder */}
+      <div className="fixed top-0 left-0 h-1 bg-indigo-500 z-[60] transition-all duration-300" 
+           style={{ width: '0%' }} id="scroll-bar"></div>
+    </div>
+  );
+}
+
+// Inline Tailwind-esque animations
+const GlobalStyles = () => (
+  <style>{`
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fade-in 0.6s ease-out forwards; }
+  `}</style>
+);
+
+```# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
