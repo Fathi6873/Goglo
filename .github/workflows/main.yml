@@ -1,218 +1,33 @@
-```react
-import React, { useState, useEffect } from 'react';
-import { 
-  Menu, X, Calendar, BookOpen, User, Users, FileText, 
-  MapPin, Phone, Mail, ChevronRight, GraduationCap, 
-  Bell, Search, Download, Clock, Award, CheckCircle,
-  ArrowRight, ShieldCheck, Globe, Star
-} from 'lucide-react';
-
-/**
- * GOGLO SCHOOL WEBSITE - COMPLETE IMPLEMENTATION
- * Features:
- * 1. Multi-page navigation (Home, Academics, Admissions, Exam Hub, Portals)
- * 2. Exam Archive (Previous years resources for Grades 6-12)
- * 3. Mobile-responsive design
- * 4. Admission Inquiry Form (Grade 6-12 selection)
- * 5. Interactive Portals
- */
-
-// --- SHARED UI COMPONENTS ---
-
-const Button = ({ children, variant = 'primary', className = '', onClick }) => {
-  const variants = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md',
-    secondary: 'bg-white text-indigo-900 border border-gray-200 hover:bg-gray-50',
-    outline: 'border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50',
-    ghost: 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
-  };
-
-  return (
-    <button 
-      onClick={onClick}
-      className={`px-6 py-2.5 rounded-xl font-bold transition-all active:scale-95 disabled:opacity-50 ${variants[variant]} ${className}`}
-    >
-      {children}
-    </button>
-  );
-};
-
-const SectionHeading = ({ title, subtitle, light = false }) => (
-  <div className="text-center mb-16 px-4">
-    <h2 className={`text-3xl md:text-5xl font-extrabold mb-4 ${light ? 'text-white' : 'text-slate-900'}`}>
-      {title}
-    </h2>
-    <div className={`w-24 h-1.5 mx-auto rounded-full mb-6 ${light ? 'bg-white/30' : 'bg-indigo-600'}`}></div>
-    <p className={`max-w-2xl mx-auto text-lg ${light ? 'text-indigo-100' : 'text-slate-600'}`}>
-      {subtitle}
-    </p>
-  </div>
-);
-
-// --- PAGE SECTIONS ---
-
-const Navbar = ({ activeTab, setActiveTab }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const menuItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'academics', label: 'Academics' },
-    { id: 'exams', label: 'Exam Hub' },
-    { id: 'admissions', label: 'Admissions' },
-    { id: 'portal', label: 'Portals' }
-  ];
-
-  return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-      scrolled ? 'bg-white shadow-xl py-3' : 'bg-white/95 backdrop-blur-sm py-5'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center">
-          <div 
-            className="flex items-center space-x-2 cursor-pointer group"
-            onClick={() => setActiveTab('home')}
-          >
-            <div className="bg-indigo-600 p-2 rounded-xl group-hover:rotate-12 transition-transform">
-              <GraduationCap className="text-white w-8 h-8" />
-            </div>
-            <span className="text-2xl font-black text-slate-900 tracking-tighter">GOGLO</span>
-          </div>
+            - name: Setup Node.js environment
+  uses: actions/setup-node@v6.4.0
+  with:
+    # Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0.
+    node-version: # optional
+    # File containing the version Spec of the version to use.  Examples: package.json, .nvmrc, .node-version, .tool-versions.
+    node-version-file: # optional
+    # Target architecture for Node to use. Examples: x86, x64. Will use system architecture by default.
+    architecture: # optional
+    # Set this option if you want the action to check for the latest available version that satisfies the version spec.
+    check-latest: # optional
+    # Optional registry to set up for auth. Will set the registry in a project level .npmrc and .yarnrc file, and set up auth to read in from env.NODE_AUTH_TOKEN.
+    registry-url: # optional
+    # Optional scope for authenticating against scoped registries. Will fall back to the repository owner when using the GitHub Packages registry (https://npm.pkg.github.com/).
+    scope: # optional
+    # Used to pull node distributions from node-versions. Since there's a default, this is typically not supplied by the user. When running this action on github.com, the default value is sufficient. When running on GHES, you can pass a personal access token for github.com if you are experiencing rate limiting.
+    token: # optional, default is ${{ github.server_url == 'https://github.com' && github.token || '' }}
+    # Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm.
+    cache: # optional
+    # Set to false to disable automatic caching. By default, caching is enabled when either devEngines.packageManager or the top-level packageManager field in package.json specifies npm as the package manager.
+    package-manager-cache: # optional, default is true
+    # Used to specify the path to a dependency file: package-lock.json, yarn.lock, etc. Supports wildcards or a list of file names for caching multiple dependencies.
+    cache-dependency-path: # optional
+    # Used to specify an alternative mirror to download Node.js binaries from
+    mirror: # optional
+    # The token used as Authorization header when fetching from the mirror
+    mirror-token: # optional
           
-          <div className="hidden lg:flex items-center space-x-1">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${
-                  activeTab === item.id 
-                    ? 'text-indigo-600 bg-indigo-50' 
-                    : 'text-slate-600 hover:text-indigo-600 hover:bg-gray-50'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-            <div className="pl-4">
-              <Button onClick={() => setActiveTab('admissions')}>Apply Now</Button>
-            </div>
-          </div>
 
-          <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden p-2 text-slate-900">
-            {isOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="lg:hidden bg-white border-t mt-3 absolute w-full shadow-2xl animate-fade-in">
-          <div className="px-4 py-6 space-y-2">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => { setActiveTab(item.id); setIsOpen(false); }}
-                className={`block w-full text-left px-4 py-4 rounded-xl text-lg font-bold ${
-                  activeTab === item.id ? 'bg-indigo-600 text-white' : 'text-slate-700 hover:bg-gray-100'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-            <div className="pt-4">
-              <button className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-xl shadow-lg">
-                APPLY FOR 2026
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </nav>
-  );
-};
-
-const HomePage = ({ setActiveTab }) => (
-  <div className="animate-fade-in">
-    {/* Hero */}
-    <section className="relative min-h-[90vh] flex items-center pt-20 overflow-hidden bg-slate-900">
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="https://images.unsplash.com/photo-1541339907198-e08759dfc3f0?auto=format&fit=crop&q=80&w=2000" 
-          alt="Campus" 
-          className="w-full h-full object-cover opacity-40"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/60 to-transparent"></div>
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-        <div className="max-w-3xl">
-          <div className="inline-flex items-center space-x-2 bg-indigo-500/20 backdrop-blur-md border border-indigo-400/30 px-4 py-2 rounded-full text-indigo-300 text-sm font-bold mb-8 animate-bounce-slow">
-            <Star size={16} fill="currentColor" />
-            <span>Awarded #1 Global Curriculum 2025</span>
-          </div>
-          <h1 className="text-6xl md:text-8xl font-black leading-none mb-8 tracking-tighter">
-            Build Your <br />
-            <span className="text-indigo-500">Future</span> Here.
-          </h1>
-          <p className="text-xl text-slate-300 mb-10 leading-relaxed max-w-xl">
-            Join Goglo's innovative community where we blend advanced technology with 
-            traditional academic rigor to prepare students from Grade 6 to Grade 12 for a global stage.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-5">
-            <button 
-              onClick={() => setActiveTab('admissions')}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-5 rounded-2xl font-black text-lg shadow-2xl transition-all hover:-translate-y-1 flex items-center justify-center gap-2"
-            >
-              Start Enrollment <ArrowRight size={20} />
-            </button>
-            <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-10 py-5 rounded-2xl font-black text-lg transition-all">
-              Watch Campus Tour
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    {/* Statistics */}
-    <section className="bg-indigo-600 py-12">
-      <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-white text-center">
-        <div>
-          <div className="text-4xl font-black mb-1">2,500+</div>
-          <div className="text-indigo-200 font-bold uppercase tracking-widest text-xs">Students</div>
-        </div>
-        <div>
-          <div className="text-4xl font-black mb-1">98%</div>
-          <div className="text-indigo-200 font-bold uppercase tracking-widest text-xs">University Pass</div>
-        </div>
-        <div>
-          <div className="text-4xl font-black mb-1">15:1</div>
-          <div className="text-indigo-200 font-bold uppercase tracking-widest text-xs">Student Ratio</div>
-        </div>
-        <div>
-          <div className="text-4xl font-black mb-1">45+</div>
-          <div className="text-indigo-200 font-bold uppercase tracking-widest text-xs">Specialties</div>
-        </div>
-      </div>
-    </section>
-
-    {/* Core Pillars */}
-    <section className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4">
-        <SectionHeading 
-          title="The Goglo Advantage" 
-          subtitle="We focus on more than just grades. We build characters, leaders, and innovators."
-        />
-        <div className="grid md:grid-cols-3 gap-12">
-          {[
-            { icon: ShieldCheck, title: 'Safe Environment', desc: 'State-of-the-art secure campus with 24/7 monitoring and wellness support.', color: 'text-blue-600', bg: 'bg-blue-50' },
-            { icon: Globe, title: 'Global Exposure', desc: 'Partnerships with Ivy League universities and international exchange programs.', color: 'text-indigo-600', bg: 'bg-indigo-50' },
-            { icon: Award, title: 'Excellence Guaranteed', desc: 'Rigorous curriculum designed by global industry experts and PhD educators.', color: 'text-amber-600', bg: 'bg-amber-50' }
+ 'Excellence Guaranteed', desc: 'Rigorous curriculum designed by global industry experts and PhD educators.', color: 'text-amber-600', bg: 'bg-amber-50' }
           ].map((item, i) => (
             <div key={i} className="p-10 rounded-3xl border border-gray-100 hover:shadow-2xl transition-all duration-300 group">
               <div className={`${item.bg} ${item.color} w-16 h-16 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform`}>
@@ -560,3 +375,4 @@ const GlobalStyles = () => (
 );
 
 ```
+ 
